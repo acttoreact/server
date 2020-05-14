@@ -1,3 +1,3 @@
-# Node Boilerplate
+# A2R Server
 
-Node Boilerplate for A2r TypeScript Projects
+A2R application logic and runtime server
