@@ -18,10 +18,10 @@ export const stop = (): void => {
 /**
  * Start of the project
  */
-export const start = (port?: number): ServerResponse => {
+export const start = async (port?: number): Promise<ServerResponse> => {
   console.log('Server start');
   stop();
-  server = createServer(port);
+  server = await createServer(port);
   return server;
 }
 

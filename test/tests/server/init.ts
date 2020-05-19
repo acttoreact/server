@@ -2,10 +2,19 @@
 // import * as express from 'express';
 // import * as io from 'socket.io';
 import { start } from '../../../index';
+import { ServerResponse } from '../../../model/server';
+
+let serverResponse: ServerResponse;
+
+/**
+ * Setup WS & HTTP servers
+ */
+beforeAll(async () => {
+  serverResponse = await start();
+});
 
 test('Should init when jest forced disabled', async (): Promise<void> => {
   console.log('Starting server');
-  const serverResponse = start();
   expect(serverResponse).toHaveProperty('server');
   expect(serverResponse).toHaveProperty('close');
 });
