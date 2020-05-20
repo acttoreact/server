@@ -1,0 +1,25 @@
+
+/**
+ * Default port
+ */
+export const defaultPort = 4000;
+
+/**
+ * Running in development mode
+ */
+export const dev = process.env.NODE_ENV === 'development';
+
+/**
+ * Default socket path
+ */
+export const socketPath = '/ws';
+
+/**
+ * Default target path for watchers, should contain `api` and `model` folders
+ */
+export const targetPath = 'server';
+
+/**
+ * Default api path inside main target path
+ */
+export const apiPath = 'api';
