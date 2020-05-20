@@ -94,9 +94,51 @@ test('Non-existing API method', async (): Promise<void> => {
   await waitForExpect(async (): Promise<void> => {
     expect(response).toBeTruthy();
     expect(response.o).toBeFalsy();
+    expect(response.e).toBe(`API method ${call.method} not found`);
+    expect(response.d).toBeFalsy();
+  });
+
+  socket.close();
+  await waitForExpect(async (): Promise<void> => {
+    expect(socket.connected).toBe(false);
+  });
+});
+
+/**
+ * Error treatment when using API methods
+ */
+test('API method error', async (): Promise<void> => {
+  const socket = io(`http://localhost:${port}`, {
+    autoConnect: true,
+    path: socketPath,
+  });
+  await waitForExpect(async (): Promise<void> => {
+    expect(socket.connected).toBe(true);
+  });
+
+  const id = generateId();
+
+  let response: SocketMessage | null = null;
+
+  socket.on(id, (res: SocketMessage): void => {
+    socket.off(id);
+    response = res;
+  });
+
+  const call: MethodCall = {
+    id,
+    method: 'tools.first',
+    params: [],
+  };
+  
+  socket.emit('*', call);
+
+  await waitForExpect(async (): Promise<void> => {
+    expect(response).toBeTruthy();
+    expect(response.o).toBeFalsy();
+    expect(response.d).toBeFalsy();
     expect(response.e).toBeTruthy();
     expect(response.s).toBeTruthy();
-    expect(response.d).toBeFalsy();
   });
 
   socket.close();

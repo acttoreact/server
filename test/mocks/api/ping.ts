@@ -1,7 +1,7 @@
 /**
  * Ping method
  */
-const ping = (): string => {
+const ping = async (): Promise<string> => {
   return "pong";
 };
 
