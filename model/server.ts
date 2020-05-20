@@ -5,5 +5,5 @@ import http from 'http';
  */
 export interface ServerResponse {
   server: http.Server;
-  close: () => void;
+  close: () => Promise<void>;
 }

@@ -26,8 +26,8 @@
     ],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
-    // "esModuleInterop": true,
-    // "isolatedModules": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "resolveJsonModule": true
   },
   "exclude": [

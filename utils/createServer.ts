@@ -1,6 +1,6 @@
-import * as http from 'http';
-import * as express from 'express';
-import * as chalk from 'chalk';
+import http from 'http';
+import express from 'express';
+import chalk from 'chalk';
 import { out } from '@a2r/telemetry';
 
 import { ServerResponse } from '../model/server';
@@ -8,12 +8,16 @@ import { ServerResponse } from '../model/server';
 import sockets from './sockets';
 import { defaultPort } from '../settings';
 
-const createServer = (port = defaultPort): Promise<ServerResponse> => {
+/**
+ * Creates HTTP server and inits socket server
+ * @param port Port for to listen
+ * @param serverApiPath Server API path
+ */
+const createServer = (port = defaultPort, serverApiPath: string): Promise<ServerResponse> => {
   return new Promise<ServerResponse>((resolve): void => {
     const expressServer = express();
     const httpServer = http.createServer(expressServer);  
-    console.log('Calling sockets setup');
-    sockets(httpServer);
+    sockets(httpServer, serverApiPath);
   
     const listener = httpServer.listen(port, (): void => {
       out.info(
@@ -25,9 +29,11 @@ const createServer = (port = defaultPort): Promise<ServerResponse> => {
       );
       resolve({
         server: listener,
-        close: (): void => {
-          listener.close();
-        },
+        close: (): Promise<void> => new Promise((resolveClose) => {
+          listener.close(() => {
+            resolveClose();
+          });
+        }),
       });
     });
   
