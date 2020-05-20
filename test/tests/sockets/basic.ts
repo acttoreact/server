@@ -6,6 +6,7 @@ import { start, stop } from '../../../index';
 import { socketPath } from '../../../settings';
 
 const port = 4002;
+let socket: SocketIOClient.Socket | null = null;
 
 /**
  * Setup WS & HTTP servers
@@ -18,14 +19,13 @@ beforeAll(async () => {
  * Socket should connect
  */
 test('Socket connection', async (): Promise<void> => {
-  const socket = io(`http://localhost:${port}`, {
+  socket = io(`http://localhost:${port}`, {
     autoConnect: true,
     path: socketPath,
   });
   await waitForExpect(async (): Promise<void> => {
     expect(socket.connected).toBe(true);
   });
-  console.log('Socket connected');
   socket.close();
   await waitForExpect(async (): Promise<void> => {
     expect(socket.connected).toBe(false);

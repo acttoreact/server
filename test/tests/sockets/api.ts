@@ -31,8 +31,6 @@ test('Socket ping', async (): Promise<void> => {
     expect(socket.connected).toBe(true);
   });
 
-  console.log('Socket connected');
-
   const id = generateId();
 
   let response: SocketMessage | null = null;
@@ -52,10 +50,53 @@ test('Socket ping', async (): Promise<void> => {
 
   await waitForExpect(async (): Promise<void> => {
     expect(response).toBeTruthy();
-    expect(response.o).toBe(true);
+    expect(response.o).toBeTruthy();
     expect(response.e).toBeFalsy();
     expect(response.s).toBeFalsy();
     expect(response.d).toBe('pong');
+  });
+
+  socket.close();
+  await waitForExpect(async (): Promise<void> => {
+    expect(socket.connected).toBe(false);
+  });
+});
+
+/**
+ * When calling a non-existing method, we should get an error
+ */
+test('Non-existing API method', async (): Promise<void> => {
+  const socket = io(`http://localhost:${port}`, {
+    autoConnect: true,
+    path: socketPath,
+  });
+  await waitForExpect(async (): Promise<void> => {
+    expect(socket.connected).toBe(true);
+  });
+
+  const id = generateId();
+
+  let response: SocketMessage | null = null;
+
+  socket.on(id, (res: SocketMessage): void => {
+    socket.off(id);
+    response = res;
+  });
+
+  const call: MethodCall = {
+    id,
+    method: 'wrong',
+    params: [],
+  };
+  
+  socket.emit('*', call);
+
+  await waitForExpect(async (): Promise<void> => {
+    expect(response).toBeTruthy();
+    expect(response.o).toBeFalsy();
+    expect(response.e).toBeTruthy();
+    expect(response.s).toBeTruthy();
+    expect(response.d).toBeFalsy();
   });
 
   socket.close();

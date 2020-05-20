@@ -28,7 +28,6 @@ const setup = (httpServer: http.Server, serverApiPath: string): void => {
   ioServer.on(
     'connection',
     async (socket: io.Socket): Promise<void> => {
-      console.log('Socket connected', socket.id);
       out.verbose(
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
@@ -39,26 +38,22 @@ const setup = (httpServer: http.Server, serverApiPath: string): void => {
         '*',
         async (info: MethodCall): Promise<void> => {
           const { id, method, params } = info;
-          console.log('Socket message', id, method, params.length);
           out.verbose(
             `Socket message received: id ${id}, method: ${method}, params: ${params.length}`,
           );
           const modulePath = getModulePath(method, serverApiPath);
-          const module = await import(modulePath);
-          try {
+          import(modulePath).then(async (module): Promise<void> => {
             const result = await module.default(...params);
             socket.emit(id, { o: 1, d: result });
-          } catch (ex) {
+          }).catch((ex): void => {
             socket.emit(id, { o: 0, e: ex.message, s: ex.stack });
-          }
+          });
         },
       );
 
       socket.on('disconnect', (): void => onDisconnect(socket));
     },
   );
-
-  console.log('Socket server ready');
 };
 
 export default setup;
