@@ -5,9 +5,9 @@ import { ServerResponse } from './model/server';
 import { isJest } from './tools/isJest';
 import createServer from './utils/createServer';
 
-import { targetPath, apiPath } from './settings';
+import { defaultPort, targetPath, apiPath } from './settings';
 
-const defaultServerApiPath = path.resolve(process.cwd(), targetPath, apiPath);
+const defaultServerApiPath = path.resolve(__dirname, targetPath, apiPath);
 
 let server: ServerResponse | null = null;
 
@@ -32,7 +32,7 @@ export const stop = async (): Promise<void> => {
  * Start of the project
  */
 export const start = async (
-  port?: number,
+  port = defaultPort,
   serverApiPath = defaultServerApiPath,
 ): Promise<ServerResponse> => {
   await stop();
