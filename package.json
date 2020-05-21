@@ -12,7 +12,7 @@
     "docker-build-prod": "IMAGE=$npm_package_name:latest;docker build --rm --pull -f \"./docker/prod/Dockerfile\" -t $IMAGE \".\"",
     "docker-start-dev": "IMAGE=$npm_package_name-dev:latest;docker run -it -d -v $INIT_CWD/server:/usr/src/app/server $IMAGE",
     "docker-start-prod": "IMAGE=$npm_package_name:latest;docker run -it -d -v $INIT_CWD/server:/usr/src/app/src/server $IMAGE",
-    "docker-start-dev-from-hub": "IMAGE=act2react/server-dev:version-$npm_package_version;docker run -it -d -v $INIT_CWD/server:/usr/src/app/server $IMAGE",
+    "docker-start-dev-from-hub": "IMAGE=act2react/server:version-$npm_package_version-dev;docker run -it -d -v $INIT_CWD/server:/usr/src/app/server $IMAGE",
     "docker-start-prod-from-hub": "IMAGE=act2react/server:version-$npm_package_version;docker run -it -d -v $INIT_CWD/server:/usr/src/app/src/server $IMAGE",
     "docker-stress-test": "docker stop server-dev;docker rm server-dev;IMAGE=server-dev:latest;docker run -it -d -v $INIT_CWD/test/mocks/stress-server:/usr/src/app/server -p 4000:4000 --name server-dev $IMAGE",
     "start": "node ./bin/index.js",
