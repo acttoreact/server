@@ -8,7 +8,6 @@ import createServer from './utils/createServer';
 import { defaultPort, targetPath, apiPath } from './settings';
 
 const defaultServerApiPath = path.resolve(__dirname, targetPath, apiPath);
-console.log('default server api path', defaultServerApiPath);
 
 let server: ServerResponse | null = null;
 
