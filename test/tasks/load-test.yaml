@@ -1,7 +1,3 @@
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 config:
   target: "http://localhost:4000"
   socketio:
@@ -27,12 +23,7 @@ scenarios:
             id:  "{{ commandID }}"
             method: "ping"
             params: []
-          response:
-            channel: "{{ commandID }}"
-            data: 
-              o: 1
-              d: "pong"
-  - name: "Connects, pings and disconnect"
+  - name: "Connects, pings, wait form pong and disconnect"
     weight: 40
     engine: "socketio"
     flow:
@@ -45,7 +36,7 @@ scenarios:
             params: []
           response:
             channel: "{{ commandID }}"
-            data: 
+            data:
               o: 1
               d: "pong"
   - name: "Connects, pings 100 times, one per second and disconnects"
