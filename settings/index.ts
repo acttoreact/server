@@ -1,3 +1,4 @@
+import { isJest } from '../tools/isJest';
 
 /**
  * Default port
@@ -8,6 +9,11 @@ export const defaultPort = 4000;
  * Running in development mode
  */
 export const dev = process.env.NODE_ENV === 'development';
+
+/**
+ * API module file extension
+ */
+export const apiFileExtension = dev || isJest() ? 'ts' : 'js';
 
 /**
  * Default socket path

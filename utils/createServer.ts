@@ -6,14 +6,13 @@ import { out } from '@a2r/telemetry';
 import { ServerResponse } from '../model/server';
 
 import sockets from './sockets';
-import { defaultPort } from '../settings';
 
 /**
  * Creates HTTP server and inits socket server
  * @param port Port for to listen
  * @param serverApiPath Server API path
  */
-const createServer = (port = defaultPort, serverApiPath: string): Promise<ServerResponse> => {
+const createServer = (port: number, serverApiPath: string): Promise<ServerResponse> => {
   return new Promise<ServerResponse>((resolve): void => {
     const expressServer = express();
     const httpServer = http.createServer(expressServer);  

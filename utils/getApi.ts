@@ -4,17 +4,19 @@ import { APIStructure, APIModule } from '../model/api';
 
 import { getFilesRecursively } from '../tools/fs';
 
+import { apiFileExtension } from '../settings';
+
 /**
  * Gets files from API path and builds API module dictionary
  * @param apiPath Server API path
  */
 const getApi = async (apiPath: string): Promise<APIStructure> => {
-  const files = await getFilesRecursively(apiPath, ['.ts']);
+  const files = await getFilesRecursively(apiPath, [`.${apiFileExtension}`]);
   const modules: { key: string; module: APIModule }[] = await Promise.all(
     files.map(async (filePath) => {
       const relativePath = path
         .relative(apiPath, filePath)
-        .replace(/\.ts$/, '')
+        .replace(new RegExp(`\\.${apiFileExtension}$`), '')
         .split('/')
         .join('.');
       const module = (await import(filePath)) as APIModule;
