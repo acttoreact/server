@@ -1,0 +1,60 @@
+config:
+  target: "http://localhost:4000"
+  socketio:
+    path: "/ws"
+    transports: ["websocket"]
+  phases:
+    - duration: 10
+      arrivalRate: 1
+    - duration: 10
+      arrivalRate: 10
+    - duration: 60
+      arrivalRate: 100
+  processor: "./functions.js"
+scenarios:
+  - name: "Just Connects"
+    weight: 10
+    engine: "socketio"
+    flow:
+      - function: "getCommandID"
+      - emit:
+          channel: "*"
+          data:
+            id:  "{{ commandID }}"
+            method: "ping"
+            params: []
+  - name: "Connects, pings, wait form pong and disconnect"
+    weight: 40
+    engine: "socketio"
+    flow:
+      - function: "getCommandID"
+      - emit:
+          channel: "*"
+          data:
+            id:  "{{ commandID }}"
+            method: "ping"
+            params: []
+          response:
+            channel: "{{ commandID }}"
+            data:
+              o: 1
+              d: "pong"
+  - name: "Connects, pings 100 times, one per second and disconnects"
+    weight: 50
+    engine: "socketio"
+    flow:
+      - loop:
+          - function: "getCommandID"
+          - emit:
+              channel: "*"
+              data:
+                id:  "{{ commandID }}"
+                method: "ping"
+                params: []
+              response:
+                channel: "{{ commandID }}"
+                data: 
+                  o: 1
+                  d: "pong"
+          - think: 1
+        count: 100

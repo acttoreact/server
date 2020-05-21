@@ -6,6 +6,8 @@
     "node": ">=12"
   },
   "scripts": {
+    "load": "artillery run -o ./test/tasks/log/report.json ./test/tasks/load-test.yaml",
+    "load-report": "artillery report ./test/tasks/log/report.json",
     "build": "tsc",
     "dev": "NODE_ENV=development ts-node-dev --debug --respawn --transpileOnly ./index.ts",
     "docker-build-dev": "IMAGE=$npm_package_name-dev:latest;docker build --rm --pull -f \"./docker/dev/Dockerfile\" -t $IMAGE \".\"",
@@ -54,6 +56,7 @@
     "@types/socket.io-client": "^1.4.33",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
+    "artillery": "^1.6.0",
     "babel-jest": "^25.5.1",
     "better-docs": "^2.0.1",
     "coveralls": "^3.0.11",
