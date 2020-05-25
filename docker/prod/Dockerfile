@@ -7,4 +7,4 @@ COPY . ./src
 RUN rm -rf ./src/server
 VOLUME ["/usr/src/app/src/server"]
 ENV NODE_ENV production
-CMD cd ./src;npm install --silent;npm run build;cp -r ./bin ../bin;cd ..;rm -rf ./src;npm start
+CMD cd ./src;npm install --silent;npm run build;cp -r ./bin ../bin;cd ..;rm -rf ./src;rm -rf ./bin;npm start
