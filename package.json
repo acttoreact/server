@@ -1,18 +1,20 @@
 {
   "name": "server",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Application logic and runtime server",
   "engines": {
     "node": ">=12"
   },
   "scripts": {
+    "load": "artillery run -o ./test/tasks/log/report.json ./test/tasks/load-test.yaml",
+    "load-report": "artillery report ./test/tasks/log/report.json",
     "build": "tsc",
     "dev": "NODE_ENV=development ts-node-dev --debug --respawn --transpileOnly ./index.ts",
     "docker-build-dev": "IMAGE=$npm_package_name-dev:latest;docker build --rm --pull -f \"./docker/dev/Dockerfile\" -t $IMAGE \".\"",
     "docker-build-prod": "IMAGE=$npm_package_name:latest;docker build --rm --pull -f \"./docker/prod/Dockerfile\" -t $IMAGE \".\"",
     "docker-start-dev": "IMAGE=$npm_package_name-dev:latest;docker run -it -d -v $INIT_CWD/server:/usr/src/app/server $IMAGE",
     "docker-start-prod": "IMAGE=$npm_package_name:latest;docker run -it -d -v $INIT_CWD/server:/usr/src/app/src/server $IMAGE",
-    "docker-start-dev-from-hub": "IMAGE=act2react/server-dev:version-$npm_package_version;docker run -it -d -v $INIT_CWD/server:/usr/src/app/server $IMAGE",
+    "docker-start-dev-from-hub": "IMAGE=act2react/server:version-$npm_package_version-dev;docker run -it -d -v $INIT_CWD/server:/usr/src/app/server $IMAGE",
     "docker-start-prod-from-hub": "IMAGE=act2react/server:version-$npm_package_version;docker run -it -d -v $INIT_CWD/server:/usr/src/app/src/server $IMAGE",
     "docker-stress-test": "docker stop server-dev;docker rm server-dev;IMAGE=server-dev:latest;docker run -it -d -v $INIT_CWD/test/mocks/stress-server:/usr/src/app/server -p 4000:4000 --name server-dev $IMAGE",
     "start": "node ./bin/index.js",
@@ -54,6 +56,7 @@
     "@types/socket.io-client": "^1.4.33",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
+    "artillery": "^1.6.0",
     "babel-jest": "^25.5.1",
     "better-docs": "^2.0.1",
     "coveralls": "^3.0.11",
