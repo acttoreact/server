@@ -17,7 +17,7 @@
     "docker-start-dev-from-hub": "IMAGE=act2react/server:version-$npm_package_version-dev;docker run -it -d -v $INIT_CWD/server:/usr/src/app/server $IMAGE",
     "docker-start-prod-from-hub": "IMAGE=act2react/server:version-$npm_package_version;docker run -it -d -v $INIT_CWD/server:/usr/src/app/src/server $IMAGE",
     "docker-stress-test": "docker stop server-dev;docker rm server-dev;IMAGE=server-dev:latest;docker run -it -d -v $INIT_CWD/test/mocks/stress-server:/usr/src/app/server -p 4000:4000 --name server-dev $IMAGE",
-    "start": "node ./bin/index.js",
+    "start": "node index.js",
     "lint": "npx eslint --config ./.eslintrc ./**/*.ts",
     "test": "jest",
     "test-clear": "rm -rf coverage;rm -rf bin",
