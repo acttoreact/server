@@ -11,8 +11,8 @@ import { socketPath } from '../../../settings';
 const port = 4004;
 const serverApiPath = path.resolve(__dirname, '../../mocks/api');
 
-const sockets = 50;
-const calls = 100;
+const sockets = 10;
+const calls = 10;
 const timeout = 30000;
 
 /**
