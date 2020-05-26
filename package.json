@@ -26,7 +26,9 @@
     "test-coverage-dev": "NODE_ENV=development jest --coverage --watchAll",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "test-full": "npm run test-clear;npm run build;npm run test;npm run test-coverage;npm run lint;npm audit;npm run docs",
-    "docs": "jsdoc -c jsdoc.json"
+    "docs": "jsdoc -c jsdoc.json",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -46,7 +48,8 @@
     "@a2r/telemetry": "^1.0.29",
     "chalk": "^4.0.0",
     "express": "^4.17.1",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "snyk": "^1.328.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.6",
@@ -74,5 +77,6 @@
     "ts-node-dev": "^1.0.0-pre.40",
     "typescript": "^3.9.2",
     "wait-for-expect": "^3.0.2"
-  }
+  },
+  "snyk": true
 }
