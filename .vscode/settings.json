@@ -9,6 +9,7 @@
     "plusplus",
     "promisify",
     "respawn",
+    "snyk",
     "socketio",
     "sourcemap",
     "tslib"
