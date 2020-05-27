@@ -1,8 +1,7 @@
 import path from 'path';
+import { getFilesRecursively } from '@a2r/fs';
 
 import { APIStructure, APIModule } from '../model/api';
-
-import { getFilesRecursively } from '../tools/fs';
 
 import { apiFileExtension } from '../settings';
 
