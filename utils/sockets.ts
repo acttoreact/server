@@ -7,8 +7,6 @@ import { out } from '@a2r/telemetry';
 import { MethodCall } from '../model/sockets';
 import { APIStructure } from '../model/api';
 
-import getApi from './getApi';
-
 import { socketPath } from '../settings';
 
 const activeSockets: { [id: string]: io.Socket } = {};
@@ -20,10 +18,11 @@ const onDisconnect = (socket: io.Socket): void => {
   );
 };
 
-const setup = async (httpServer: http.Server, serverApiPath: string): Promise<void> => {
+const setup = async (
+  httpServer: http.Server,
+  api: APIStructure,
+): Promise<void> => {
   const ioServer = io(httpServer, { path: socketPath });
-
-  const api: APIStructure = await getApi(serverApiPath);
 
   ioServer.on(
     'connection',
@@ -44,7 +43,9 @@ const setup = async (httpServer: http.Server, serverApiPath: string): Promise<vo
           const module = api[method];
           if (module) {
             try {
+              // setContext
               const result = await module.default(...params);
+              // setContext(false)
               socket.emit(id, { o: 1, d: result });
             } catch (ex) {
               socket.emit(id, { o: 0, e: ex.message, s: ex.stack });
