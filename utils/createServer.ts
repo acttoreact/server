@@ -3,9 +3,11 @@ import express from 'express';
 import chalk from 'chalk';
 import { out } from '@a2r/telemetry';
 
-import { ServerResponse } from '../model/server';
-
+import getApi from './getApi';
 import sockets from './sockets';
+
+import { ServerResponse } from '../model/server';
+import { APIStructure } from '../model/api';
 
 /**
  * Creates HTTP server and inits socket server
@@ -15,30 +17,42 @@ import sockets from './sockets';
 const createServer = (port: number, serverApiPath: string): Promise<ServerResponse> => {
   return new Promise<ServerResponse>((resolve): void => {
     const expressServer = express();
-    const httpServer = http.createServer(expressServer);  
-    sockets(httpServer, serverApiPath);
-  
-    const listener = httpServer.listen(port, (): void => {
-      out.info(
-        chalk.white.bold(
-          `Listening ${chalk.yellow.bold(
-            `http://localhost:${port.toString()}/`,
-          )}`,
-        ),
-      );
-      resolve({
-        server: listener,
-        close: (): Promise<void> => new Promise((resolveClose) => {
-          listener.close(() => {
-            resolveClose();
-          });
-        }),
+    const httpServer = http.createServer(expressServer);
+
+    getApi(serverApiPath).then((api: APIStructure) => {
+      Object.entries(api).forEach(([key, method]) => {
+        const apiPath = key.split('.').join('/');
+        out.info(`Setting up API REST method ${`/api/${apiPath}`}`);
+        expressServer.post(`/api/${apiPath}`, async function handler(req, res) {
+          const { params } = req.params;
+          const result = await method.default(params);
+          res.end(result);
+        });
       });
-    });
+      sockets(httpServer, api);
   
-    listener.on('close', (): void => {
-      out.info(chalk.white.bold('Http server closed'));
-    });      
+      const listener = httpServer.listen(port, (): void => {
+        out.info(
+          chalk.white.bold(
+            `Listening ${chalk.yellow.bold(
+              `http://localhost:${port.toString()}/`,
+            )}`,
+          ),
+        );
+        resolve({
+          server: listener,
+          close: (): Promise<void> => new Promise((resolveClose) => {
+            listener.close(() => {
+              resolveClose();
+            });
+          }),
+        });
+      });
+    
+      listener.on('close', (): void => {
+        out.info(chalk.white.bold('Http server closed'));
+      }); 
+    });
   });  
 };
 

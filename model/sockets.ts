@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import io from 'socket.io';
+
 /**
  * Socket basic call
  */
@@ -50,4 +52,11 @@ export interface SocketMessage {
    * @memberof SocketMessage
    */
   d: any;
+};
+
+/**
+ * A2R Socket
+ */
+export interface A2RSocket extends io.Socket {
+  sessionId: string;
 };

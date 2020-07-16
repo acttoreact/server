@@ -1,13 +1,13 @@
-// import path from 'path';
+/* eslint no-param-reassign: ["error", { "props": false }] */
+
 import http from 'http';
 import io from 'socket.io';
 import chalk from 'chalk';
+import Cookies from 'universal-cookie';
 import { out } from '@a2r/telemetry';
 
-import { MethodCall } from '../model/sockets';
+import { A2RSocket, MethodCall } from '../model/sockets';
 import { APIStructure } from '../model/api';
-
-import getApi from './getApi';
 
 import { socketPath } from '../settings';
 
@@ -20,17 +20,24 @@ const onDisconnect = (socket: io.Socket): void => {
   );
 };
 
-const setup = async (httpServer: http.Server, serverApiPath: string): Promise<void> => {
+const setup = async (
+  httpServer: http.Server,
+  api: APIStructure,
+): Promise<void> => {
   const ioServer = io(httpServer, { path: socketPath });
-
-  const api: APIStructure = await getApi(serverApiPath);
 
   ioServer.on(
     'connection',
-    async (socket: io.Socket): Promise<void> => {
+    async (socket: A2RSocket): Promise<void> => {
       out.verbose(
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
+
+      const cookieKey = 'a2r_sessionId';
+      const header = socket.handshake.headers && socket.handshake.headers.cookie;
+      const cookies = new Cookies(header);
+      const sessionId = cookies.get(cookieKey);
+      socket.sessionId = sessionId;
 
       activeSockets[socket.id] = socket;
 
@@ -44,7 +51,9 @@ const setup = async (httpServer: http.Server, serverApiPath: string): Promise<vo
           const module = api[method];
           if (module) {
             try {
+              // setContext
               const result = await module.default(...params);
+              // setContext(false)
               socket.emit(id, { o: 1, d: result });
             } catch (ex) {
               socket.emit(id, { o: 0, e: ex.message, s: ex.stack });
