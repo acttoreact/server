@@ -24,7 +24,8 @@ const createServer = (port: number, serverApiPath: string): Promise<ServerRespon
         const apiPath = key.split('.').join('/');
         out.info(`Setting up API REST method ${`/api/${apiPath}`}`);
         expressServer.post(`/api/${apiPath}`, async function handler(req, res) {
-          const result = await method.default();
+          const { params } = req.params;
+          const result = await method.default(params);
           res.end(result);
         });
       });
