@@ -1,10 +1,12 @@
-// import path from 'path';
+/* eslint no-param-reassign: ["error", { "props": false }] */
+
 import http from 'http';
 import io from 'socket.io';
 import chalk from 'chalk';
+import Cookies from 'universal-cookie';
 import { out } from '@a2r/telemetry';
 
-import { MethodCall } from '../model/sockets';
+import { A2RSocket, MethodCall } from '../model/sockets';
 import { APIStructure } from '../model/api';
 
 import { socketPath } from '../settings';
@@ -26,10 +28,16 @@ const setup = async (
 
   ioServer.on(
     'connection',
-    async (socket: io.Socket): Promise<void> => {
+    async (socket: A2RSocket): Promise<void> => {
       out.verbose(
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
+
+      const cookieKey = 'a2r_sessionId';
+      const header = socket.handshake.headers && socket.handshake.headers.cookie;
+      const cookies = new Cookies(header);
+      const sessionId = cookies.get(cookieKey);
+      socket.sessionId = sessionId;
 
       activeSockets[socket.id] = socket;
 
