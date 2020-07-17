@@ -29,14 +29,16 @@ const setup = async (
   ioServer.on(
     'connection',
     async (socket: A2RSocket): Promise<void> => {
-      out.verbose(
+      out.info(
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
 
       const cookieKey = 'a2r_sessionId';
-      const header = socket.handshake.headers && socket.handshake.headers.cookie;
+      const header =
+        socket.handshake.headers && socket.handshake.headers.cookie;
       const cookies = new Cookies(header);
       const sessionId = cookies.get(cookieKey);
+      out.info(`Cookies sessionId: ${sessionId}`);
       socket.sessionId = sessionId;
 
       activeSockets[socket.id] = socket;
@@ -46,7 +48,7 @@ const setup = async (
         async (info: MethodCall): Promise<void> => {
           const { id, method, params } = info;
           out.verbose(
-            `Socket message received: id ${id}, method: ${method}, params: ${params.length}`,
+            `Socket message received: sessionId ${socket.sessionId} id ${id}, method: ${method}, params: ${params.length}`,
           );
           const module = api[method];
           if (module) {
