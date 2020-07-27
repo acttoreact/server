@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "package.json",
+    "server/package.json"
+  ]
+}
