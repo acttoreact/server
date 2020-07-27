@@ -3,13 +3,15 @@
 import http from 'http';
 import io from 'socket.io';
 import chalk from 'chalk';
-import Cookies from 'universal-cookie';
 import { out } from '@a2r/telemetry';
+import { setContext } from 'a2r';
+
+import getSessionId from './getSessionId';
 
 import { A2RSocket, MethodCall } from '../model/sockets';
 import { APIStructure } from '../model/api';
 
-import { socketPath } from '../settings';
+import { socketPath, cookieKey } from '../settings';
 
 const activeSockets: { [id: string]: io.Socket } = {};
 
@@ -33,12 +35,10 @@ const setup = async (
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
 
-      const cookieKey = 'a2r_sessionId';
       const header =
         socket.handshake.headers && socket.handshake.headers.cookie;
-      const cookies = new Cookies(header);
-      const sessionId = cookies.get(cookieKey);
-      out.info(`Cookies sessionId: ${sessionId}`);
+      const sessionId = getSessionId(header);
+      out.info(`Cookies sessionId: ${sessionId} (${cookieKey})`);
       socket.sessionId = sessionId;
 
       activeSockets[socket.id] = socket;
@@ -53,9 +53,9 @@ const setup = async (
           const module = api[method];
           if (module) {
             try {
-              // setContext
+              setContext({ sessionId });
               const result = await module.default(...params);
-              // setContext(false)
+              setContext(false);
               socket.emit(id, { o: 1, d: result });
             } catch (ex) {
               socket.emit(id, { o: 0, e: ex.message, s: ex.stack });

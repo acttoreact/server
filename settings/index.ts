@@ -11,6 +11,11 @@ export const defaultPort = 4000;
 export const dev = process.env.NODE_ENV === 'development';
 
 /**
+ * Session cookie key
+ */
+export const cookieKey = process.env.COOKIE_KEY || 'a2r_sessionId';
+
+/**
  * API module file extension
  */
 export const apiFileExtension = dev || isJest() ? 'ts' : 'js';
