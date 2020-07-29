@@ -1,4 +1,8 @@
+import dotenv from 'dotenv';
+
 import { isJest } from '../tools/isJest';
+
+dotenv.config();
 
 /**
  * Default port
