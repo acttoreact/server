@@ -4,6 +4,5 @@ LABEL Description="A2R Server"
 COPY . .
 RUN rm -rf ./server
 RUN npm install --silent
-VOLUME ["/usr/src/app/server/api"]
-VOLUME ["/usr/src/app/server/model"]
-CMD npm run check-packages;npm run dev
+VOLUME ["/usr/src/app/server"]
+CMD npm install --prefix ./server;npm run dev
