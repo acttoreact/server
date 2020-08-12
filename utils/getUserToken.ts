@@ -2,15 +2,15 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import Cookies from 'universal-cookie';
 
-import { cookieKey } from '../settings';
+import { userTokenKey } from '../settings';
 
 /**
- * Gets sessionId stored in cookies
+ * Gets userToken stored in cookies
  * @param header Request header or Socket handshake header
  */
-const getSessionId = (header: any): string | null => {
+const getUserToken = (header: any): string | null => {
   const cookies = new Cookies(header);
-  return cookies.get(cookieKey);
+  return cookies.get(userTokenKey);
 };
 
-export default getSessionId;
+export default getUserToken;
