@@ -37,7 +37,7 @@ export const socketPath = '/ws';
 /**
  * Reserved file name for server setup
  */
-export const serverSetupFileName = '_setup';
+export const serverSetupFileName = '_setup.ts';
 
 /**
  * Default target path for watchers, should contain `api` and `model` folders
