@@ -22,7 +22,7 @@ const getRestApi = (api: APIStructure): Router => {
       const header = req.headers && req.headers.cookie;
       const sessionId = getSessionId(header);
       setContext({ sessionId });
-      const result = await method.default(params);
+      const result = await method.default(...params);
       setContext(false);
       res.end(result);
     });
