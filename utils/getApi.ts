@@ -17,13 +17,14 @@ import { apiFileExtension, serverSetupFileName } from '../settings';
 const getApi = async (apiPath: string): Promise<APIInfo> => {
   let setup = null;
   const files = await getFilesRecursively(apiPath, [`.${apiFileExtension}`]);
+  const setupPath = path.resolve(apiPath, serverSetupFileName);
 
-  const setupIndex = files.findIndex((f) => f === serverSetupFileName);
+  const setupIndex = files.findIndex((f) => f === setupPath);
   if (setupIndex !== -1) {
     files.splice(setupIndex, 1);
     setup =
       ((await import(
-        path.relative(apiPath, serverSetupFileName)
+        path.relative(apiPath, setupPath)
       )) as ServerSetupModule)?.default || null;
   }
 
