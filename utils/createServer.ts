@@ -1,5 +1,8 @@
 import http from 'http';
 import express from 'express';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import chalk from 'chalk';
 import { out } from '@a2r/telemetry';
 
@@ -22,6 +25,12 @@ const createServer = (
   return new Promise<ServerResponse>((resolve): void => {
     const expressServer = express();
     const httpServer = http.createServer(expressServer);
+
+    expressServer.use(bodyParser.urlencoded({ extended: true }));
+    expressServer.use(bodyParser.json({ limit: '50mb' }));
+    expressServer.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    expressServer.use(cookieParser());
+    expressServer.use(cors());
 
     getApi(serverApiPath).then((api: APIStructure) => {
       const restApi = getRestApi(api);

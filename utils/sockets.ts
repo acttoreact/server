@@ -66,6 +66,18 @@ const setup = async (
         },
       );
 
+      // socket.on('a2r_login', (): void => {
+        
+      // });
+
+      // socket.on('a2r_logout', (): void => {
+
+      // });
+
+      // socket.on('a2r_setUserTolen', (): void => {
+
+      // });
+
       socket.on('disconnect', (): void => onDisconnect(socket));
     },
   );

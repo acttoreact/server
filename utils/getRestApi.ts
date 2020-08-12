@@ -17,7 +17,8 @@ const getRestApi = (api: APIStructure): Router => {
     const apiPath = key.split('.').join('/');
     out.info(`Setting up API REST method ${`/api/${apiPath}`}`);
     router.post(`/${apiPath}`, async function handler(req, res) {
-      const { params } = req.params;
+      out.info(`Method /api/${apiPath} called`);
+      const { params } = req.body;
       const header = req.headers && req.headers.cookie;
       const sessionId = getSessionId(header);
       setContext({ sessionId });

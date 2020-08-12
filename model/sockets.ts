@@ -59,4 +59,5 @@ export interface SocketMessage {
  */
 export interface A2RSocket extends io.Socket {
   sessionId: string;
+  userToken?: string;
 };
