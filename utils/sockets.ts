@@ -13,8 +13,15 @@ import { APIStructure } from '../model/api';
 
 import { socketPath, cookieKey } from '../settings';
 
+/**
+ * Active sockets dictionary (by socket ID)
+ */
 const activeSockets: { [id: string]: io.Socket } = {};
 
+/**
+ * Socket disconnection handler
+ * @param io.Socket socket
+ */
 const onDisconnect = (socket: io.Socket): void => {
   delete activeSockets[socket.id];
   out.verbose(
@@ -22,6 +29,11 @@ const onDisconnect = (socket: io.Socket): void => {
   );
 };
 
+/**
+ * Server sockets setup
+ * @param httpServer HTTP Server
+ * @param api API Structure
+ */
 const setup = async (
   httpServer: http.Server,
   api: APIStructure,
