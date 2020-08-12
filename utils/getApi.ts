@@ -1,16 +1,32 @@
 import path from 'path';
 import { getFilesRecursively } from '@a2r/fs';
 
-import { APIStructure, APIModule } from '../model/api';
+import {
+  APIInfo,
+  APIStructure,
+  APIModule,
+  ServerSetupModule,
+} from '../model/api';
 
-import { apiFileExtension } from '../settings';
+import { apiFileExtension, serverSetupFileName } from '../settings';
 
 /**
  * Gets files from API path and builds API module dictionary
  * @param apiPath Server API path
  */
-const getApi = async (apiPath: string): Promise<APIStructure> => {
+const getApi = async (apiPath: string): Promise<APIInfo> => {
+  let setup = null;
   const files = await getFilesRecursively(apiPath, [`.${apiFileExtension}`]);
+
+  const setupIndex = files.findIndex((f) => f === serverSetupFileName);
+  if (setupIndex !== -1) {
+    files.splice(setupIndex, 1);
+    setup =
+      ((await import(
+        path.relative(apiPath, serverSetupFileName)
+      )) as ServerSetupModule)?.default || null;
+  }
+
   const modules: { key: string; module: APIModule }[] = await Promise.all(
     files.map(async (filePath) => {
       const relativePath = path
@@ -22,13 +38,19 @@ const getApi = async (apiPath: string): Promise<APIStructure> => {
       return { key: relativePath, module };
     }),
   );
-  return modules.reduce(
+
+  const api = modules.reduce(
     (t, { key, module }): APIStructure => ({
       ...t,
       [key]: module,
     }),
     {},
   );
+
+  return {
+    api,
+    setup,
+  };
 };
 
 export default getApi;

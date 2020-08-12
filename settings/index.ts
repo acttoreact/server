@@ -35,6 +35,11 @@ export const apiFileExtension = dev || isJest() ? 'ts' : 'js';
 export const socketPath = '/ws';
 
 /**
+ * Reserved file name for server setup
+ */
+export const serverSetupFileName = '_setup';
+
+/**
  * Default target path for watchers, should contain `api` and `model` folders
  */
 export const targetPath = 'server';

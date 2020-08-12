@@ -11,7 +11,6 @@ import getRestApi from './getRestApi';
 import sockets from './sockets';
 
 import { ServerResponse } from '../model/server';
-import { APIStructure } from '../model/api';
 
 /**
  * Creates HTTP server and inits socket server
@@ -32,11 +31,21 @@ const createServer = (
     expressServer.use(cookieParser());
     expressServer.use(cors());
 
-    getApi(serverApiPath).then((api: APIStructure) => {
+    getApi(serverApiPath).then(async ({ api, setup }) => {
       const restApi = getRestApi(api);
       expressServer.use('/api', restApi);
 
-      sockets(httpServer, api);
+      const ioServer = sockets(httpServer, api);
+
+      if (setup) {
+        try {
+          out.info('User server setup found, executing...');
+          await setup({ expressServer, httpServer, ioServer, port });
+        } catch (ex) {
+          out.warn(`Error during user server setup: ${ex.stack || ex.message}`);
+        }
+      }
+
       const listener = httpServer.listen(port, (): void => {
         out.info(
           chalk.white.bold(

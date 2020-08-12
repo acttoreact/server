@@ -37,10 +37,10 @@ const onDisconnect = (socket: io.Socket): void => {
  * @param httpServer HTTP Server
  * @param api API Structure
  */
-const setup = async (
+const setup = (
   httpServer: http.Server,
   api: APIStructure,
-): Promise<void> => {
+): io.Server => {
   const ioServer = io(httpServer, { path: socketPath });
 
   ioServer.on(
@@ -94,13 +94,18 @@ const setup = async (
         socket.emit(id, token);
       });
 
-      // socket.on('a2r_logout', (): void => {
-
-      // });
+      socket.on('a2r_logout', (id: string, token?: string): void => {
+        if (!token || socket.userToken === token) {
+          delete socket.userToken;
+        }
+        socket.emit(id);
+      });
 
       socket.on('disconnect', (): void => onDisconnect(socket));
     },
   );
+
+  return ioServer;
 };
 
 export default setup;
