@@ -22,10 +22,7 @@ const getApi = async (apiPath: string): Promise<APIInfo> => {
   const setupIndex = files.findIndex((f) => f === setupPath);
   if (setupIndex !== -1) {
     files.splice(setupIndex, 1);
-    setup =
-      ((await import(
-        path.relative(apiPath, setupPath)
-      )) as ServerSetupModule)?.default || null;
+    setup = ((await import(setupPath)) as ServerSetupModule)?.default || null;
   }
 
   const modules: { key: string; module: APIModule }[] = await Promise.all(
