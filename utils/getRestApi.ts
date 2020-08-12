@@ -24,7 +24,7 @@ const getRestApi = (api: APIStructure): Router => {
       setContext({ sessionId });
       const result = await method.default(...params);
       setContext(false);
-      res.end(result);
+      return res.status(200).json(result);
     });
   });
 
