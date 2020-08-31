@@ -28,8 +28,8 @@ const createServer = (
     expressServer.use(bodyParser.urlencoded({ extended: true }));
     expressServer.use(bodyParser.json({ limit: '50mb' }));
     expressServer.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    expressServer.use(cors({ credentials: true }));
     expressServer.use(cookieParser());
-    expressServer.use(cors());
 
     getApi(serverApiPath).then(async ({ api, setup }) => {
       const restApi = getRestApi(api);
