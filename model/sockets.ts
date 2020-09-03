@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import io from 'socket.io';
+import { Socket } from 'socket.io';
 
 /**
  * Socket basic call
@@ -57,7 +57,7 @@ export interface SocketMessage {
 /**
  * A2R Socket
  */
-export interface A2RSocket extends io.Socket {
+export interface A2RSocket extends Socket {
   sessionId: string;
   userToken?: string;
 };
