@@ -1,7 +1,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import http from 'http';
-import io from 'socket.io';
+import io, { Socket } from 'socket.io';
 import chalk from 'chalk';
 import { out } from '@a2r/telemetry';
 import { setContext, A2RUserTokenInfo, A2RContext } from 'a2r';
@@ -19,13 +19,13 @@ import getUserToken from './getUserToken';
 /**
  * Active sockets dictionary (by socket ID)
  */
-const activeSockets: { [id: string]: io.Socket } = {};
+const activeSockets: { [id: string]: Socket } = {};
 
 /**
  * Socket disconnection handler
- * @param io.Socket socket
+ * @param Socket socket
  */
-const onDisconnect = (socket: io.Socket): void => {
+const onDisconnect = (socket: Socket): void => {
   delete activeSockets[socket.id];
   out.verbose(
     chalk.white.bold(`Socket disconnected ${chalk.yellow.bold(socket.id)}`),
@@ -45,7 +45,7 @@ const setup = (
 
   ioServer.on(
     'connection',
-    async (socket: A2RSocket): Promise<void> => {
+    async (socket: Socket): Promise<void> => {
       out.info(
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
@@ -53,9 +53,9 @@ const setup = (
       const header = socket.handshake.headers?.cookie;
       const sessionId = getSessionId(header);
       const userToken = getUserToken(header);
-      socket.sessionId = sessionId;
+      (socket as A2RSocket).sessionId = sessionId;
       if (userToken) {
-        socket.userToken = userToken;
+        (socket as A2RSocket).userToken = userToken;
       }
 
       activeSockets[socket.id] = socket;
@@ -71,7 +71,7 @@ const setup = (
           if (module) {
             try {
               const context: A2RContext = { sessionId };
-              const userInfo = getTokenInfo(socket.userToken);
+              const userInfo = getTokenInfo((socket as A2RSocket).userToken);
               if (userInfo) {
                 context.userInfo = userInfo;
               }
@@ -90,13 +90,13 @@ const setup = (
 
       socket.on('a2r_login', (id: string, info: A2RUserTokenInfo): void => {
         const token = createToken(info);
-        socket.userToken = token;
+        (socket as A2RSocket).userToken = token;
         socket.emit(id, token);
       });
 
       socket.on('a2r_logout', (id: string, token?: string): void => {
-        if (!token || socket.userToken === token) {
-          delete socket.userToken;
+        if (!token || (socket as A2RSocket).userToken === token) {
+          delete (socket as A2RSocket).userToken;
         }
         socket.emit(id);
       });
