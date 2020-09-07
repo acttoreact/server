@@ -101,6 +101,10 @@ const setup = (
         socket.emit(id);
       });
 
+      socket.on('alive', (): void => {
+        socket.emit('alive', true);
+      });
+
       socket.on('disconnect', (): void => onDisconnect(socket));
     },
   );

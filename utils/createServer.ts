@@ -33,7 +33,11 @@ const createServer = (
 
     getApi(serverApiPath).then(async ({ api, setup }) => {
       const restApi = getRestApi(api);
-      expressServer.use('/api', restApi);
+      expressServer.use('/a2r', restApi);
+
+      expressServer.use('/alive', async function handler(_, res) {
+        return res.status(200).json(true);
+      });
 
       const ioServer = sockets(httpServer, api);
 

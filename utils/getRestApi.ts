@@ -17,25 +17,33 @@ const getRestApi = (api: APIStructure): Router => {
 
   Object.entries(api).forEach(([key, method]) => {
     const apiPath = key.split('.').join('/');
-    out.info(`Setting up API REST method /api/${apiPath}`);
+    out.info(`Setting up API REST method /a2r/${apiPath}`);
     router.post(`/${apiPath}`, async function handler(req, res) {
       const { params } = req.body;
-      const header = req.headers?.cookie;
-      const sessionId = getSessionId(header);
-      const userToken = getUserToken(header);
-      const context: A2RContext = { sessionId };
-      const userInfo = getTokenInfo(userToken);
-      if (userInfo) {
-        context.userInfo = userInfo;
+      try {
+        const header = req.headers?.cookie;
+        const sessionId = getSessionId(header);
+        const userToken = getUserToken(header);
+        const context: A2RContext = { sessionId };
+        const userInfo = getTokenInfo(userToken);
+        if (userInfo) {
+          context.userInfo = userInfo;
+        }
+        setContext(context);
+        const result = await method.default(...(params || []));
+        setContext(false);
+        return res.status(200).json(result);
+      } catch (ex) {
+        const error = `Error at request /a2r/${apiPath} ${
+          params ? `with params :${JSON.stringify(params)}` : 'without params'
+        } => ${ex.stack || ex.message}`;
+        out.error(error);
+        return res.status(500).json(error);
       }
-      setContext(context);
-      const result = await method.default(...params);
-      setContext(false);
-      return res.status(200).json(result);
     });
   });
 
   return router;
-}
+};
 
 export default getRestApi;
