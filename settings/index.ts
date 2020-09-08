@@ -7,7 +7,7 @@ dotenv.config();
 /**
  * Default port
  */
-export const defaultPort = process.env.PORT || 80;
+export const defaultPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 80;
 
 /**
  * Running in development mode
