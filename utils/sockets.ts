@@ -50,7 +50,7 @@ const setup = (
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
 
-      const header = socket.handshake.headers?.cookie;
+      const header = socket.handshake.headers?.cookie || socket.request?.headers?.cookie;
       const sessionId = getSessionId(header);
       const userToken = getUserToken(header);
       (socket as A2RSocket).sessionId = sessionId;
@@ -64,9 +64,6 @@ const setup = (
         '*',
         async (info: MethodCall): Promise<void> => {
           const { id, method, params } = info;
-          // out.verbose(
-          //   `Socket message received: sessionId ${socket.sessionId}, userToken ${socket.userToken} id ${id}, method: ${method}`,
-          // );
           const module = api[method];
           if (module) {
             try {
