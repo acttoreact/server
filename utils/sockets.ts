@@ -52,7 +52,6 @@ const setup = (
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
 
-      out.info(`Headers: ${socket.handshake.headers?.cookie}, ${socket.request?.headers?.cookie}`);
       const header = socket.handshake.headers?.cookie || socket.request?.headers?.cookie;
       const sessionId = getSessionId(header);
       const userToken = getUserToken(header);
