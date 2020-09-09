@@ -52,7 +52,7 @@ export const healthEndpoint = process.env.HEALTH_ENDPOINT || '/health';
 /**
  * Reserved file name for server setup
  */
-export const serverSetupFileName = '_setup.ts';
+export const serverSetupFileName = '_setup';
 
 /**
  * Default target path for watchers, should contain `api` and `model` folders
