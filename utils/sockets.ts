@@ -74,6 +74,7 @@ const setup = (
               if (userInfo) {
                 context.userInfo = userInfo;
               }
+              out.info(`Cookies: ${sessionId}, ${userToken}`);
               setContext(context);
               const result = await module.default(...params);
               setContext(false);
