@@ -13,7 +13,7 @@ import getTokenInfo from './getTokenInfo';
 import { A2RSocket, MethodCall } from '../model/sockets';
 import { APIStructure } from '../model/api';
 
-import { socketPath } from '../settings';
+import { socketPath, cookieKey, userTokenKey } from '../settings';
 import getUserToken from './getUserToken';
 
 /**
@@ -43,6 +43,8 @@ const setup = (
 ): io.Server => {
   const ioServer = io(httpServer, { path: socketPath });
 
+  out.info(`Socket setup with cookies keys: ${cookieKey} and ${userTokenKey}`);
+
   ioServer.on(
     'connection',
     async (socket: Socket): Promise<void> => {
@@ -50,6 +52,7 @@ const setup = (
         chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
       );
 
+      out.info(`Headers: ${socket.handshake.headers?.cookie}, ${socket.request?.headers?.cookie}`);
       const header = socket.handshake.headers?.cookie || socket.request?.headers?.cookie;
       const sessionId = getSessionId(header);
       const userToken = getUserToken(header);
