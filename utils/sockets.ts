@@ -97,7 +97,7 @@ const setup = (
         if (!token || (socket as A2RSocket).userToken === token) {
           delete (socket as A2RSocket).userToken;
         }
-        socket.emit(id);
+        socket.emit(id, token);
       });
 
       socket.on('alive', (): void => {
