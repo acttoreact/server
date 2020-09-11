@@ -17,7 +17,7 @@ import { apiFileExtension, serverSetupFileName } from '../settings';
 const getApi = async (apiPath: string): Promise<APIInfo> => {
   let setup = null;
   const files = await getFilesRecursively(apiPath, [`.${apiFileExtension}`]);
-  const setupPath = path.resolve(apiPath, serverSetupFileName);
+  const setupPath = path.resolve(apiPath, `${serverSetupFileName}.${apiFileExtension}`);
 
   const setupIndex = files.findIndex((f) => f === setupPath);
   if (setupIndex !== -1) {

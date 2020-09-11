@@ -12,6 +12,8 @@ import sockets from './sockets';
 
 import { ServerResponse } from '../model/server';
 
+import { apiPrefix, aliveEndpoint } from '../settings';
+
 /**
  * Creates HTTP server and inits socket server
  * @param port Port for to listen
@@ -32,19 +34,22 @@ const createServer = (
     expressServer.use(cookieParser());
 
     getApi(serverApiPath).then(async ({ api, setup }) => {
-      const restApi = getRestApi(api);
-      expressServer.use('/api', restApi);
-
+      const restApiRouter = getRestApi(api);
       const ioServer = sockets(httpServer, api);
 
       if (setup) {
         try {
           out.info('User server setup found, executing...');
-          await setup({ expressServer, httpServer, ioServer, port });
+          await setup({ expressServer, httpServer, ioServer, port, apiPrefix });
         } catch (ex) {
           out.warn(`Error during user server setup: ${ex.stack || ex.message}`);
         }
       }
+
+      expressServer.use(apiPrefix, restApiRouter);
+      expressServer.use(aliveEndpoint, async function handler(_, res) {
+        return res.status(200).json(true);
+      });
 
       const listener = httpServer.listen(port, (): void => {
         out.info(

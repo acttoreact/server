@@ -31,6 +31,7 @@ export interface ServerContext {
   httpServer: http.Server;
   ioServer: io.Server;
   port: number;
+  apiPrefix: string;
 }
 
 export type ServerSetupMethod = (context: ServerContext) => void | Promise<void>;

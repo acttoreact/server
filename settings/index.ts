@@ -7,7 +7,7 @@ dotenv.config();
 /**
  * Default port
  */
-export const defaultPort = 4000;
+export const defaultPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 80;
 
 /**
  * Running in development mode
@@ -35,9 +35,24 @@ export const apiFileExtension = dev || isJest() ? 'ts' : 'js';
 export const socketPath = '/ws';
 
 /**
+ * REST API Prefix
+ */
+export const apiPrefix = process.env.API_PREFIX || '/a2r';
+
+/**
+ * Alive endpoint
+ */
+export const aliveEndpoint = process.env.ALIVE_ENDPOINT || '/alive';
+
+/**
+ * Health endpoint
+ */
+export const healthEndpoint = process.env.HEALTH_ENDPOINT || '/health';
+
+/**
  * Reserved file name for server setup
  */
-export const serverSetupFileName = '_setup.ts';
+export const serverSetupFileName = '_setup';
 
 /**
  * Default target path for watchers, should contain `api` and `model` folders
