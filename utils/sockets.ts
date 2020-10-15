@@ -9,12 +9,13 @@ import { setContext, A2RUserTokenInfo, A2RContext } from 'a2r';
 import getSessionId from './getSessionId';
 import createToken from './createToken';
 import getTokenInfo from './getTokenInfo';
+import getReferer from './getReferer';
+import getUserToken from './getUserToken';
 
 import { A2RSocket, MethodCall } from '../model/sockets';
 import { APIStructure } from '../model/api';
 
-import { socketPath, cookieKey, userTokenKey } from '../settings';
-import getUserToken from './getUserToken';
+import { socketPath, cookieKey, userTokenKey, refererKey } from '../settings';
 
 /**
  * Active sockets dictionary (by socket ID)
@@ -37,30 +38,39 @@ const onDisconnect = (socket: Socket): void => {
  * @param httpServer HTTP Server
  * @param api API Structure
  */
-const setup = (
-  httpServer: http.Server,
-  api: APIStructure,
-): io.Server => {
+const setup = (httpServer: http.Server, api: APIStructure): io.Server => {
   const ioServer = io(httpServer, { path: socketPath });
 
-  out.info(`Socket setup with cookies keys: ${cookieKey} and ${userTokenKey}`);
+  out.info(`Socket setup with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`);
 
   ioServer.on(
     'connection',
     async (socket: Socket): Promise<void> => {
-      out.info(
-        chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)}`),
+      const header = socket.handshake.headers?.cookie;
+      const ips: string[] = Array.from(
+        new Set([
+          socket.request.ip,
+          ...(socket.request.ips || []),
+          socket.request.connection?.remoteAddress,
+          socket.handshake.address,
+          socket.handshake.headers['x-forwarded-for'],
+          socket.handshake.headers['x-real-ip'],
+        ].filter((s): boolean => !!s)),
       );
 
-      const header = socket.handshake.headers?.cookie || socket.request?.headers?.cookie;
       const sessionId = getSessionId(header);
       const userToken = getUserToken(header);
+      const referer = decodeURIComponent(getReferer(header));
       (socket as A2RSocket).sessionId = sessionId;
       if (userToken) {
         (socket as A2RSocket).userToken = userToken;
       }
 
       activeSockets[socket.id] = socket;
+
+      out.info(
+        chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)} (sessionId: ${sessionId})`),
+      );
 
       socket.on(
         '*',
@@ -69,12 +79,11 @@ const setup = (
           const module = api[method];
           if (module) {
             try {
-              const context: A2RContext = { sessionId };
+              const context: A2RContext = { sessionId, ips, referer };
               const userInfo = getTokenInfo((socket as A2RSocket).userToken);
               if (userInfo) {
                 context.userInfo = userInfo;
               }
-              out.info(`Cookies: ${sessionId}, ${userToken}`);
               setContext(context);
               const result = await module.default(...params);
               setContext(false);

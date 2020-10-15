@@ -5,6 +5,7 @@ import { A2RContext, setContext } from 'a2r';
 import getSessionId from './getSessionId';
 import getUserToken from './getUserToken';
 import getTokenInfo from './getTokenInfo';
+import getReferer from './getReferer';
 
 import { APIStructure } from '../model/api';
 
@@ -24,7 +25,17 @@ const getRestApi = (api: APIStructure): Router => {
         const header = req.headers?.cookie;
         const sessionId = getSessionId(header);
         const userToken = getUserToken(header);
-        const context: A2RContext = { sessionId };
+        const ips: string[] = Array.from(
+          new Set([
+            req.ip,
+            ...(req.ips || []),
+            req.socket.remoteAddress,
+            req.headers['x-forwarded-for'],
+            req.headers['x-real-ip'],
+          ].filter((s): boolean => !!s) as string[]),
+        );
+        const referer = getReferer(header);
+        const context: A2RContext = { sessionId, ips, referer };
         const userInfo = getTokenInfo(userToken);
         if (userInfo) {
           context.userInfo = userInfo;
