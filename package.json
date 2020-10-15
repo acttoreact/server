@@ -58,7 +58,7 @@
     "jsonwebtoken": "^8.5.1",
     "snyk": "^1.373.1",
     "socket.io": "^2.2.0",
-    "universal-cookie": "^4.0.3"
+    "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
