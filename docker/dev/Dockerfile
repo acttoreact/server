@@ -18,10 +18,11 @@ COPY ./settings ./settings
 COPY ./tools ./tools
 COPY ./utils ./utils
 COPY ./index.ts ./index.ts
+RUN mkdir ./server
+RUN mkdir ./server/api
+RUN mkdir ./server/model
 COPY --from=dependencies /usr/src/app/node_modules ./node_modules
 
 # ---- Release  ----
 FROM server AS release
 LABEL Description="A2R Server"
-VOLUME ["/usr/src/app/server"]
-CMD npm install --prefix ./server;npm run dev
