@@ -1,7 +1,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import http from 'http';
-import io, { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import chalk from 'chalk';
 import { out } from '@a2r/telemetry';
 import { setContext, A2RUserTokenInfo, A2RContext } from 'a2r';
@@ -38,24 +38,29 @@ const onDisconnect = (socket: Socket): void => {
  * @param httpServer HTTP Server
  * @param api API Structure
  */
-const setup = (httpServer: http.Server, api: APIStructure): io.Server => {
-  const ioServer = io(httpServer, { path: socketPath });
+const setup = (httpServer: http.Server, api: APIStructure): Server => {
+  const ioServer = new Server(httpServer, { path: socketPath });
 
-  out.info(`Socket setup with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`);
+  out.info(
+    `Socket setup with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`,
+  );
 
   ioServer.on(
     'connection',
     async (socket: Socket): Promise<void> => {
-      const header = socket.handshake.headers?.cookie;
+      const header =
+        (socket.handshake.headers as { cookie?: string })?.cookie ||
+        socket.request.headers.cookie;
       const ips: string[] = Array.from(
-        new Set([
-          socket.request.ip,
-          ...(socket.request.ips || []),
-          socket.request.connection?.remoteAddress,
-          socket.handshake.address,
-          socket.handshake.headers['x-forwarded-for'],
-          socket.handshake.headers['x-real-ip'],
-        ].filter((s): boolean => !!s)),
+        new Set(
+          [
+            socket.request.connection?.remoteAddress,
+            socket.request.connection?.localAddress,
+            socket.handshake.address,
+            socket.handshake.headers['x-forwarded-for'],
+            socket.handshake.headers['x-real-ip'],
+          ].filter((s): boolean => !!s),
+        ),
       );
 
       const sessionId = getSessionId(header);
@@ -69,7 +74,11 @@ const setup = (httpServer: http.Server, api: APIStructure): io.Server => {
       activeSockets[socket.id] = socket;
 
       out.info(
-        chalk.white.bold(`Socket Connected ${chalk.yellow.bold(socket.id)} (sessionId: ${sessionId})`),
+        chalk.white.bold(
+          `Socket Connected ${chalk.yellow.bold(
+            socket.id,
+          )} (sessionId: ${sessionId})`,
+        ),
       );
 
       socket.on(
