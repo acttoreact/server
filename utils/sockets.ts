@@ -77,7 +77,7 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
         chalk.white.bold(
           `Socket Connected ${chalk.yellow.bold(
             socket.id,
-          )} (sessionId: ${sessionId})`,
+          )} (${cookieKey}: ${sessionId})`,
         ),
       );
 
