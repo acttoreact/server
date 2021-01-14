@@ -77,7 +77,7 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
         chalk.white.bold(
           `Socket Connected ${chalk.yellow.bold(
             socket.id,
-          )} (sessionId: ${sessionId})`,
+          )} (${cookieKey}: ${sessionId})`,
         ),
       );
 
@@ -110,6 +110,21 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
         const token = createToken(info);
         (socket as A2RSocket).userToken = token;
         socket.emit(id, token);
+      });
+
+      socket.on('a2r_token_login', (id: string, token: string): void => {
+        try {
+          const check = getTokenInfo();
+          if (check === null) {
+            socket.emit(id, false);
+          } else {
+            (socket as A2RSocket).userToken = token;
+            socket.emit(id, true);
+          }
+        } catch (ex) {
+          out.warn(`Error at "a2r_token_login":\n${ex.stack || ex.message}`);
+          socket.emit(id, false);
+        }
       });
 
       socket.on('a2r_logout', (id: string, token?: string): void => {
