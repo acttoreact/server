@@ -114,7 +114,7 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
 
       socket.on('a2r_token_login', (id: string, token: string): void => {
         try {
-          const check = getTokenInfo();
+          const check = getTokenInfo(token);
           if (check === null) {
             socket.emit(id, false);
           } else {
