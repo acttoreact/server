@@ -60,4 +60,6 @@ export interface SocketMessage {
 export interface A2RSocket extends Socket {
   sessionId: string;
   userToken?: string;
+  ips: string[];
+  referer: string;
 };
