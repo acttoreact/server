@@ -51,6 +51,7 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
       const header =
         (socket.handshake.headers as { cookie?: string })?.cookie ||
         socket.request.headers.cookie;
+
       const ips: string[] = Array.from(
         new Set(
           [
@@ -62,10 +63,12 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
           ].filter((s): boolean => !!s),
         ),
       );
-
+      const referer = decodeURIComponent(getReferer(header));
       const sessionId = getSessionId(header);
       const userToken = getUserToken(header);
-      const referer = decodeURIComponent(getReferer(header));
+
+      (socket as A2RSocket).ips = ips;
+      (socket as A2RSocket).referer = referer;
       (socket as A2RSocket).sessionId = sessionId;
       if (userToken) {
         (socket as A2RSocket).userToken = userToken;
