@@ -37,7 +37,7 @@ export const apiFileExtension = dev || isJest() ? 'ts' : 'js';
 /**
  * Default socket path
  */
-export const socketPath = '/ws';
+export const socketPath = process.env.SOCKET_PATH || '/ws';
 
 /**
  * REST API Prefix
@@ -57,17 +57,17 @@ export const healthEndpoint = process.env.HEALTH_ENDPOINT || '/health';
 /**
  * Reserved file name for server setup
  */
-export const serverSetupFileName = '_setup';
+export const serverSetupFileName = process.env.SERVER_SETUP_FILE_NAME || '_setup';
 
 /**
  * Default target path for watchers, should contain `api` and `model` folders
  */
-export const targetPath = 'server';
+export const targetPath = process.env.TARGET_PATH || 'server';
 
 /**
  * Default api path inside main target path
  */
-export const apiPath = 'api';
+export const apiPath = process.env.API_PATH || 'api';
 
 /**
  * Secret key for token sign
