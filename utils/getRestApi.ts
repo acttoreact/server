@@ -2,12 +2,14 @@ import { Router } from 'express';
 import { out } from '@a2r/telemetry';
 import { A2RContext, setContext } from 'a2r';
 
+import { APIStructure } from '../model/api';
+
 import getSessionId from './getSessionId';
 import getUserToken from './getUserToken';
 import getTokenInfo from './getTokenInfo';
 import getReferer from './getReferer';
 
-import { APIStructure } from '../model/api';
+import { apiPrefix } from 'settings';
 
 /**
  * Gets REST API Express router
@@ -18,7 +20,7 @@ const getRestApi = (api: APIStructure): Router => {
 
   Object.entries(api).forEach(([key, method]) => {
     const apiPath = key.split('.').join('/');
-    out.info(`Setting up API REST method /a2r/${apiPath}`);
+    out.info(`Setting up API REST method ${apiPrefix}/${apiPath}`);
     router.post(`/${apiPath}`, async function handler(req, res) {
       const { params } = req.body;
       try {
@@ -45,7 +47,7 @@ const getRestApi = (api: APIStructure): Router => {
         setContext(false);
         return res.status(200).json(result);
       } catch (ex) {
-        const error = `Error at request /a2r/${apiPath} ${
+        const error = `Error at request ${apiPrefix}/${apiPath} ${
           params ? `with params :${JSON.stringify(params)}` : 'without params'
         } => ${ex.stack || ex.message}`;
         out.error(error);

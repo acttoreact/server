@@ -42,7 +42,7 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
   const ioServer = new Server(httpServer, { path: socketPath });
 
   out.info(
-    `Socket setup with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`,
+    `Socket setup at "${socketPath}" with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`,
   );
 
   ioServer.on(
