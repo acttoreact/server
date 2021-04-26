@@ -1,6 +1,32 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.14.1
-ignore: {}
+version: v1.19.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-MARKED-584281:
+    - '@a2r/telemetry > jsdoc > marked':
+        reason: None given
+        expires: '2021-05-26T13:54:23.647Z'
+    - a2r > @a2r/telemetry > jsdoc > marked:
+        reason: None given
+        expires: '2021-05-26T13:54:23.647Z'
+  SNYK-JS-PUG-1071616:
+    - '@a2r/telemetry > better-docs > vue-docgen-api > pug':
+        reason: None given
+        expires: '2021-05-26T13:54:23.647Z'
+    - a2r > @a2r/telemetry > better-docs > vue-docgen-api > pug:
+        reason: None given
+        expires: '2021-05-26T13:54:23.647Z'
+  SNYK-JS-UNDERSCORE-1080984:
+    - '@a2r/telemetry > jsdoc > underscore':
+        reason: None given
+        expires: '2021-05-26T13:54:23.647Z'
+    - a2r > @a2r/telemetry > jsdoc > underscore:
+        reason: None given
+        expires: '2021-05-26T13:54:23.647Z'
+  SNYK-JS-XMLHTTPREQUESTSSL-1082936:
+    - a2r > socket.io-client > engine.io-client > xmlhttprequest-ssl:
+        reason: None given
+        expires: '2021-05-26T13:54:23.647Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:
