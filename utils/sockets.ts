@@ -117,15 +117,18 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
 
       socket.on('a2r_token_login', (id: string, token: string): void => {
         try {
+          out.info(`[a2r_token_login] (${id}) Getting info from token: ${token}`);
           const check = getTokenInfo(token);
           if (check === null) {
+            out.info('[a2r_token_login] Got null from verify');
             socket.emit(id, false);
           } else {
+            out.info(`[a2r_token_login] Valid token. Setting token as userToken for socket ${socket.id}`);
             (socket as A2RSocket).userToken = token;
             socket.emit(id, true);
           }
         } catch (ex) {
-          out.warn(`Error at "a2r_token_login":\n${ex.stack || ex.message}`);
+          out.info(`Error at "a2r_token_login":\n${ex.stack || ex.message}`);
           socket.emit(id, false);
         }
       });

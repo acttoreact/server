@@ -42,7 +42,7 @@ const createServer = (
           out.info('User server setup found, executing...');
           await setup({ expressServer, httpServer, ioServer, port, apiPrefix });
         } catch (ex) {
-          out.warn(`Error during user server setup: ${ex.stack || ex.message}`);
+          out.info(`Error during user server setup: ${ex.stack || ex.message}`);
         }
       }
 
