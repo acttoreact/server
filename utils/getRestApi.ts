@@ -9,7 +9,7 @@ import getUserToken from './getUserToken';
 import getTokenInfo from './getTokenInfo';
 import getReferer from './getReferer';
 
-import { apiPrefix } from 'settings';
+import { apiPrefix } from '../settings';
 
 /**
  * Gets REST API Express router
@@ -28,13 +28,15 @@ const getRestApi = (api: APIStructure): Router => {
         const sessionId = getSessionId(header);
         const userToken = getUserToken(header);
         const ips: string[] = Array.from(
-          new Set([
-            req.ip,
-            ...(req.ips || []),
-            req.socket.remoteAddress,
-            req.headers['x-forwarded-for'],
-            req.headers['x-real-ip'],
-          ].filter((s): boolean => !!s) as string[]),
+          new Set(
+            [
+              req.ip,
+              ...(req.ips || []),
+              req.socket.remoteAddress,
+              req.headers['x-forwarded-for'],
+              req.headers['x-real-ip'],
+            ].filter((s): boolean => !!s) as string[],
+          ),
         );
         const referer = getReferer(header);
         const context: A2RContext = { sessionId, ips, referer };
