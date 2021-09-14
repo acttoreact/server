@@ -39,7 +39,7 @@ const getRestApi = (api: APIStructure): Router => {
           ),
         );
         const referer = getReferer(header);
-        const context: A2RContext = { sessionId, ips, referer };
+        const context: A2RContext = { sessionId, ips, referer, req };
         const userInfo = getTokenInfo(userToken);
         if (userInfo) {
           context.userInfo = userInfo;
