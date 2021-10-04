@@ -56,8 +56,8 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
           socket.request.connection?.remoteAddress,
           socket.request.connection?.localAddress,
           socket.handshake.address,
-          socket.handshake.headers['x-forwarded-for'],
-          socket.handshake.headers['x-real-ip'],
+          socket.handshake.headers['x-forwarded-for'] as string,
+          socket.handshake.headers['x-real-ip'] as string,
         ].filter((s): boolean => !!s),
       ),
     );
