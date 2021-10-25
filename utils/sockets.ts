@@ -15,7 +15,13 @@ import getUserToken from './getUserToken';
 import { MethodCall } from '../model/sockets';
 import { APIStructure } from '../model/api';
 
-import { socketPath, cookieKey, userTokenKey, refererKey } from '../settings';
+import {
+  socketPath,
+  cookieKey,
+  userTokenKey,
+  refererKey,
+  socketServerMaxHttpBufferSize,
+} from '../settings';
 
 /**
  * Active sockets dictionary (by socket ID)
@@ -39,7 +45,10 @@ const onDisconnect = (socket: Socket): void => {
  * @param api API Structure
  */
 const setup = (httpServer: http.Server, api: APIStructure): Server => {
-  const ioServer = new Server(httpServer, { path: socketPath });
+  const ioServer = new Server(httpServer, {
+    path: socketPath,
+    maxHttpBufferSize: socketServerMaxHttpBufferSize ?? 1e5,
+  });
 
   out.info(
     `Socket setup at "${socketPath}" with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`,

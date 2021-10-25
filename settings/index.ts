@@ -7,7 +7,9 @@ dotenv.config();
 /**
  * Default port
  */
-export const defaultPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 80;
+export const defaultPort = process.env.PORT
+  ? parseInt(process.env.PORT, 10)
+  : 80;
 
 /**
  * Running in development mode
@@ -57,7 +59,8 @@ export const healthEndpoint = process.env.HEALTH_ENDPOINT || '/health';
 /**
  * Reserved file name for server setup
  */
-export const serverSetupFileName = process.env.SERVER_SETUP_FILE_NAME || '_setup';
+export const serverSetupFileName =
+  process.env.SERVER_SETUP_FILE_NAME || '_setup';
 
 /**
  * Default target path for watchers, should contain `api` and `model` folders
@@ -73,3 +76,10 @@ export const apiPath = process.env.API_PATH || 'api';
  * Secret key for token sign
  */
 export const secretKey = process.env.SECRET_KEY || 'a2r_secret_key';
+
+/**
+ * Socket server `maxHttpBufferSize` option
+ */
+export const socketServerMaxHttpBufferSize = process.env.SOCKET_MAX_BUFFER_SIZE
+  ? parseInt(process.env.SOCKET_MAX_BUFFER_SIZE)
+  : undefined;
