@@ -20,7 +20,6 @@ IMAGE_VERSION=$IMAGE:$VERSION
 IMAGE_LATEST=$IMAGE:latest
 aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r7l7n8i7
 echo "Building $IMAGE_VERSION"
-docker build --rm=false --pull -f ../docker/prod/Dockerfile -t $DOCKER_REGISTRY/$IMAGE_VERSION -t $DOCKER_REGISTRY/$IMAGE_LATEST ../
-echo "Pushing $IMAGE"
-docker push "$DOCKER_REGISTRY/$IMAGE" --all-tags
+# docker buildx build --rm=false --pull --push --platforms linux/arm64 -f ../docker/prod/Dockerfile -t $DOCKER_REGISTRY/$IMAGE_VERSION -t $DOCKER_REGISTRY/$IMAGE_LATEST ../
+docker buildx build --rm=false --pull --push --platform linux/arm64 -f ../docker/prod/Dockerfile -t $DOCKER_REGISTRY/$IMAGE_VERSION-arm ../
 echo "$IMAGE pushed"
