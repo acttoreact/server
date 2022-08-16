@@ -38,9 +38,6 @@ const getRestApi = (api: APIStructure): Router => {
             ].filter((s): boolean => !!s) as string[],
           ),
         );
-        console.log('api rest method');
-        console.log('request headers', JSON.stringify(req.headers));
-        console.log('ips', ips);
         const referer = getReferer(header);
         const context: A2RContext = { sessionId, ips, referer, req };
         const userInfo = getTokenInfo(userToken);
