@@ -26,7 +26,44 @@ import {
 /**
  * Active sockets dictionary (by socket ID)
  */
-const activeSockets: { [id: string]: Socket } = {};
+const activeSockets: Record<string, Socket> = {};
+
+/**
+ * IPs by session
+ */
+const socketsIps = new Map<string, Set<string>>();
+
+const handleHeaders = (socket: Socket): void => {
+  if (socket.id) {
+    let socketIps = socketsIps.get(socket.id);
+    if (!socketIps) {
+      socketIps = new Set<string>();
+    }
+    [
+      socket.request.connection?.remoteAddress,
+      socket.request.connection?.localAddress,
+      socket.handshake.address,
+      socket.handshake.headers['x-forwarded-for'] as string,
+      socket.handshake.headers['x-real-ip'] as string,
+      socket.request.headers['x-forwarded-for'] as string,
+      socket.request.headers['x-real-ip'] as string,
+    ].forEach((ip) => {
+      if (ip) {
+        socketIps.add(ip);
+      }
+    });
+  }
+};
+
+const getIps = (ips: string[], socketId: string): string[] => {
+  if (socketId) {
+    const socketIps = socketsIps.get(socketId);
+    if (socketIps) {
+      return Array.from(new Set<string>([...ips, ...Array.from(socketIps)]));
+    }
+  }
+  return ips;
+};
 
 /**
  * Socket disconnection handler
@@ -54,6 +91,11 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
     `Socket setup at "${socketPath}" with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`,
   );
 
+  ioServer.use((socket, next) => {
+    handleHeaders(socket);
+    next();
+  });
+
   ioServer.on('connection', async (socket: Socket): Promise<void> => {
     const header =
       (socket.handshake.headers as { cookie?: string })?.cookie ||
@@ -67,6 +109,8 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
           socket.handshake.address,
           socket.handshake.headers['x-forwarded-for'] as string,
           socket.handshake.headers['x-real-ip'] as string,
+          socket.request.headers['x-forwarded-for'] as string,
+          socket.request.headers['x-real-ip'] as string,
         ].filter((s): boolean => !!s),
       ),
     );
@@ -98,7 +142,7 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
         try {
           const context: A2RContext = {
             sessionId,
-            ips,
+            ips: getIps(ips, socket.id),
             referer,
             socket: socket as A2RSocket,
           };
