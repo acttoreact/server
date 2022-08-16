@@ -52,6 +52,14 @@ const handleHeaders = (socket: Socket): void => {
         socketIps.add(ip);
       }
     });
+    console.log('handleHeaders');
+    console.log('request headers', JSON.stringify(socket.request.headers));
+    console.log('handshake headers', JSON.stringify(socket.handshake.headers));
+    console.log('request', {
+      remoteAddress: socket.request.connection?.remoteAddress,
+      localAddress: socket.request.connection?.localAddress,
+    });
+    console.log('ips', Array.from(socketIps));
   }
 };
 
@@ -114,6 +122,14 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
         ].filter((s): boolean => !!s),
       ),
     );
+    console.log('connection');
+    console.log('request headers', JSON.stringify(socket.request.headers));
+    console.log('handshake headers', JSON.stringify(socket.handshake.headers));
+    console.log('request', {
+      remoteAddress: socket.request.connection?.remoteAddress,
+      localAddress: socket.request.connection?.localAddress,
+    });
+    console.log('ips', ips);
     const referer = decodeURIComponent(getReferer(header));
     const sessionId = getSessionId(header);
     const userToken = getUserToken(header);
