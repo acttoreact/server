@@ -115,7 +115,10 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
       ),
     );
     const referer = decodeURIComponent(getReferer(header));
-    const sessionId = getSessionId(header);
+    const sessionId = getSessionId(
+      socket.request.headers,
+      socket.handshake.headers,
+    );
     const userToken = getUserToken(header);
 
     (socket as A2RSocket).ips = ips;
