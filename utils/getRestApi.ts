@@ -25,7 +25,7 @@ const getRestApi = (api: APIStructure): Router => {
       const { params } = req.body;
       try {
         const header = req.headers?.cookie;
-        const sessionId = getSessionId(header);
+        const sessionId = getSessionId(req.headers);
         const userToken = getUserToken(header);
         const ips: string[] = Array.from(
           new Set(
