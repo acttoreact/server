@@ -1,7 +1,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import http from 'http';
-import { Socket, Server } from 'socket.io';
+import { Socket, Server, ServerOptions } from 'socket.io';
 import chalk from 'chalk';
 import { out } from '@a2r/telemetry';
 import { setContext, A2RUserTokenInfo, A2RContext, A2RSocket } from 'a2r';
@@ -82,13 +82,22 @@ const onDisconnect = (socket: Socket): void => {
  * @param api API Structure
  */
 const setup = (httpServer: http.Server, api: APIStructure): Server => {
-  const ioServer = new Server(httpServer, {
+  const options: Partial<ServerOptions> = {
     path: socketPath,
     maxHttpBufferSize: socketServerMaxHttpBufferSize ?? 1e5,
-  });
+  };
+  if (process.env.ambient === 'dev') {
+    options.cors = {
+      origin: '*',
+      credentials: true,
+    };
+  }
+  const ioServer = new Server(httpServer, options);
 
   out.info(
-    `Socket setup at "${socketPath}" with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey}`,
+    `Socket setup at "${socketPath}" with cookies keys: ${cookieKey}, ${userTokenKey}, ${refererKey} and config: ${JSON.stringify(
+      options,
+    )}`,
   );
 
   ioServer.use((socket, next) => {
@@ -111,7 +120,7 @@ const setup = (httpServer: http.Server, api: APIStructure): Server => {
           socket.handshake.headers['x-real-ip'] as string,
           socket.request.headers['x-forwarded-for'] as string,
           socket.request.headers['x-real-ip'] as string,
-        ].filter((s): boolean => !!s),
+        ].filter(Boolean),
       ),
     );
     const referer = decodeURIComponent(getReferer(header));

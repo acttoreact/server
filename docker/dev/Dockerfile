@@ -26,3 +26,4 @@ COPY --from=dependencies /usr/src/app/node_modules ./node_modules
 # ---- Release  ----
 FROM server AS release
 LABEL Description="A2R Server"
+ENV ambient dev

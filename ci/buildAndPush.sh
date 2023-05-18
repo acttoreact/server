@@ -7,9 +7,9 @@ echo "Version $VERSION"
 
 DEV_IMAGE=server-dev
 DEV_IMAGE_VERSION=$DEV_IMAGE:$VERSION
-DEV_IMAGE_LATEST=$DEV_IMAGE:latest
+DEV_IMAGE_LATEST=$DEV_IMAGE\:latest
 aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r7l7n8i7
-echo "Building $DEV_IMAGE_VERSION"
+echo "Building $DEV_IMAGE_VERSION ($DEV_IMAGE_LATEST)"
 docker build --rm=false --pull -f "../docker/dev/Dockerfile" -t $DOCKER_REGISTRY/$DEV_IMAGE_VERSION -t $DOCKER_REGISTRY/$DEV_IMAGE_LATEST ../
 echo "Pushing $DEV_IMAGE"
 docker push "$DOCKER_REGISTRY/$DEV_IMAGE" --all-tags
@@ -21,5 +21,5 @@ IMAGE_LATEST=$IMAGE:latest
 aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r7l7n8i7
 echo "Building $IMAGE_VERSION"
 # docker buildx build --rm=false --pull --push --platforms linux/arm64 -f ../docker/prod/Dockerfile -t $DOCKER_REGISTRY/$IMAGE_VERSION -t $DOCKER_REGISTRY/$IMAGE_LATEST ../
-docker buildx build --rm=false --pull --push --platform linux/arm64 -f ../docker/prod/Dockerfile -t $DOCKER_REGISTRY/$IMAGE_VERSION-arm ../
+docker buildx build --progress=plain --rm=false --pull --push --platform linux/arm64 -f ../docker/prod/Dockerfile -t $DOCKER_REGISTRY/$IMAGE_VERSION-arm ../
 echo "$IMAGE pushed"

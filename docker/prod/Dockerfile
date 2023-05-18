@@ -9,7 +9,7 @@ COPY ["./jest.config.js", "./tsconfig.json", "./.eslintrc", "./.eslintignore", "
 
 # -- Dependencies Node ---
 FROM build-base AS dependencies
-RUN npm install --prefix ./src --production --silent
+RUN npm install --prefix ./src --production
 
 # ---- Compile  ----
 FROM build-base AS server
@@ -24,3 +24,4 @@ COPY --from=dependencies /usr/src/app/src/node_modules ./src/node_modules
 FROM server AS release
 LABEL Description="A2R Server"
 ENV NODE_ENV production
+ENV ambient release
